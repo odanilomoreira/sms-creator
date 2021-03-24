@@ -3,11 +3,13 @@ from flask_restful import Api
 from flask_jwt_extended import JWTManager
 from resources.user import User, UserRegister, UserLogin, UserLogout, UserConfirm
 from blacklist import BLACKLIST
+from flask_cors import CORS
 
 # webhook_url = 'https://webhook.site/a7e52c0d-532a-48e8-adc9-faecebee02c7'
 # secret_key = '40d6f141-fe3b-4f9d-824a-f04084762d31' #Restaurant ID
 
 app = Flask(__name__)
+CORS(app)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['JWT_SECRET_KEY'] = 'DontTellAnyone'
