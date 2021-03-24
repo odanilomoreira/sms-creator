@@ -1,6 +1,7 @@
 from sql_alchemy import db
 from flask import request, url_for
 from requests import post
+from send_email import confrm_email
 
 MAILGUN_DOMAIN = 'sandbox7405257bdaeb4b0791617210d2eabb5a.mailgun.org'
 MAILGUN_API_KEY = 'key-5f9cfb789e009f8a171d01d6195149b0'
@@ -24,18 +25,8 @@ class UserModel(db.Model):
 
     def send_confirmation_email(self):
         # http://127.0.0.1:5000/confirm/{user_id}
-        link = request.url_root[:-1] + url_for('userconfirm', user_id=self.user_id)
-        return post(f'https://api.mailgun.net/v3/{MAILGUN_DOMAIN}/messages',
-                    auth=('api', MAILGUN_API_KEY),
-                    data={f'from': '{FROM_TITLE} <{FROM_EMAIL}>',
-                          'to': self.email,
-                          'subject': 'Please confirm your registration',
-                          f'text': 'Confirm your register by clicking here: {link}',
-                          f'html': '<html><p>\
-                          Confirm your register by clicking here: <a href="{link}">CONFIRMAR EMAIL</a>\
-                          </p></html>'
-                          }
-                   )
+        confirmation_link = request.url_root[:-1] + url_for('userconfirm', user_id=self.user_id)
+        confrm_email(self.email,confirmation_link)
 
     def json(self):
         return {
