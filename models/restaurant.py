@@ -6,18 +6,24 @@ class RestaurantModel(db.Model):
     restaurant_id = db.Column(db.String(80), primary_key=True)
     restaurant_name = db.Column(db.String(80))
     restaurant_phone = db.Column(db.String(20))
+    pickup_message = db.Column(db.String(140))
+    delivery_message = db.Column(db.String(140))
     users = db.relationship('UserModel') # users list
 
-    def __init__(self, restaurant_id, restaurant_name, restaurant_phone):
+    def __init__(self, restaurant_id, restaurant_name, restaurant_phone, pickup_message, delivery_message):
         self.restaurant_id = restaurant_id
         self.restaurant_name = restaurant_name
         self.restaurant_phone = restaurant_phone
+        self.pickup_message = pickup_message
+        self.delivery_message = delivery_message
 
     def json(self):
         return {
             'restaurant_id': self.restaurant_id,
             'restaurant_name': self.restaurant_name,
             'restaurant_phone': self.restaurant_phone,
+            'pickup_message': self.pickup_message,
+            "delivery_message": self.delivery_message,
             'users': [user.json() for user in self.users]
         }
 

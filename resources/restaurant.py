@@ -7,6 +7,8 @@ body_request = reqparse.RequestParser()
 body_request.add_argument('restaurant_name', type=str, required=True, help="The field 'restaurant_name' cannot be left blank.")
 body_request.add_argument('restaurant_phone', type=str, required=True, help="The field 'restaurant_phone' cannot be left blank.")
 body_request.add_argument('restaurant_id', type=str, required=True, help="The field 'restaurant_id' cannot be left blank.")
+body_request.add_argument('pickup_message', type=str, required=True, help="The field 'pickup_message' cannot be left blank.")
+body_request.add_argument('delivery_message', type=str, required=True, help="The field 'delivery_message' cannot be left blank.")
 
 
 class UsersByRestaurantId(Resource):
