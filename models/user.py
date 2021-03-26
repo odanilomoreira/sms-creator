@@ -3,11 +3,6 @@ from flask import request, url_for
 from requests import post
 from send_email import confrm_email
 
-MAILGUN_DOMAIN = 'sandbox7405257bdaeb4b0791617210d2eabb5a.mailgun.org'
-MAILGUN_API_KEY = 'key-5f9cfb789e009f8a171d01d6195149b0'
-FROM_TITLE = 'NO-REPLY'
-FROM_EMAIL = 'no-reply@sms-creator.com'
-
 class UserModel(db.Model):
     __tablename__ = 'users'
 
@@ -16,12 +11,14 @@ class UserModel(db.Model):
     password = db.Column(db.String(40), nullable=False)
     email = db.Column(db.String(80), nullable=False, unique=True)
     activated = db.Column(db.Boolean, default=False)
+    restaurant_id = db.Column(db.String(80), db.ForeignKey('restaurants.restaurant_id'))
 
-    def __init__(self, username, password, email, activated):
+    def __init__(self, username, password, email, restaurant_id, activated):
         self.username = username
         self.password = password
         self.email = email
         self.activated = activated
+        self.restaurant_id = restaurant_id
 
     def send_confirmation_email(self):
         # http://127.0.0.1:5000/confirm/{user_id}
@@ -33,6 +30,7 @@ class UserModel(db.Model):
             'user_id': self.user_id,
             'username': self.username,
             'email': self.email,
+            'restaurant_id': self.restaurant_id,
             'activated': self.activated
             }
 

@@ -1,12 +1,10 @@
 from flask import Flask, jsonify
 from flask_restful import Api
 from flask_jwt_extended import JWTManager
+from resources.restaurant import UsersByRestaurantId, Restaurant
 from resources.user import User, UserRegister, UserLogin, UserLogout, UserConfirm
 from blacklist import BLACKLIST
 from flask_cors import CORS
-
-# webhook_url = 'https://webhook.site/a7e52c0d-532a-48e8-adc9-faecebee02c7'
-# secret_key = '40d6f141-fe3b-4f9d-824a-f04084762d31' #Restaurant ID
 
 app = Flask(__name__)
 CORS(app)
@@ -39,6 +37,8 @@ api.add_resource(User, '/users/<int:user_id>')
 api.add_resource(UserLogin, '/login')
 api.add_resource(UserLogout, '/logout')
 api.add_resource(UserConfirm, '/confirm/<int:user_id>')
+api.add_resource(UsersByRestaurantId, '/restaurants/<string:restaurant_id>/users')
+api.add_resource(Restaurant, '/restaurant/')
 
 if __name__ == '__main__':
     from sql_alchemy import db

@@ -6,11 +6,13 @@ from blacklist import BLACKLIST
 import traceback
 from flask import make_response, render_template
 
-atributos = reqparse.RequestParser()
-atributos.add_argument('email', type=str, required=True, help="The field 'email' cannot be left blank.")
-atributos.add_argument('password', type=str, required=True, help="The field 'password' cannot be left blank.")
-atributos.add_argument('username', type=str)
-atributos.add_argument('activated', type=bool)
+body_request = reqparse.RequestParser()
+body_request.add_argument('email', type=str, required=True, help="The field 'email' cannot be left blank.")
+body_request.add_argument('password', type=str, required=True, help="The field 'password' cannot be left blank.")
+body_request.add_argument('username', type=str)
+body_request.add_argument('activated', type=bool)     
+body_request.add_argument('restaurant_id', type=str, required=True, help="The field 'restaurant_id' cannot be left blank.")
+
 
 class User(Resource):
     # /users/{user_id}
@@ -31,7 +33,7 @@ class User(Resource):
 class UserRegister(Resource):
     # /register
     def post(self):
-        data = atributos.parse_args()
+        data = body_request.parse_args()
         if not data.get('email') or data.get('email') is None:
             return {"message": "The field 'email' cannot be left blank."}, 400
 
@@ -42,7 +44,7 @@ class UserRegister(Resource):
             return {"message": "The username '{}' already exists.".format(data['username'])}, 400 #Bad Request
 
         user = UserModel(**data)
-        user.activated = False
+        user.activated = False ###################### Change Here
         try:
             user.save_user()
             user.send_confirmation_email()
@@ -56,14 +58,14 @@ class UserLogin(Resource):
 
     @classmethod
     def post(cls):
-        data = atributos.parse_args()
+        data = body_request.parse_args()
 
         user = UserModel.find_by_email(data['email'])
 
         if user and safe_str_cmp(user.password, data['password']):
             if user.activated:
                 access_token = create_access_token(identity=user.user_id)
-                return {'access_token': access_token}, 200
+                return {'username': user.username, 'access_token': access_token}, 200
             return {'message': 'User not confirmed.'}, 400
         return {'message': 'The email or password is incorrect.'}, 401 # Unauthorized
 
