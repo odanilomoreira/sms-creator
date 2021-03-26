@@ -33,7 +33,7 @@ def revoked_tokens(jwt_header, jwt_payload):
     return jsonify({'message': 'You have been logged out.'}), 401 # unauthorized
 
 api.add_resource(UserRegister, '/register')
-api.add_resource(User, '/users/<int:user_id>')
+api.add_resource(User, '/users/<string:email>')
 api.add_resource(UserLogin, '/login')
 api.add_resource(UserLogout, '/logout')
 api.add_resource(UserConfirm, '/confirm/<int:user_id>')

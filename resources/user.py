@@ -11,7 +11,7 @@ body_request.add_argument('email', type=str, required=True, help="The field 'ema
 body_request.add_argument('password', type=str, required=True, help="The field 'password' cannot be left blank.")
 body_request.add_argument('username', type=str)
 body_request.add_argument('activated', type=bool)     
-body_request.add_argument('restaurant_id', type=str, required=True, help="The field 'restaurant_id' cannot be left blank.")
+body_request.add_argument('restaurant_id', type=str)
 
 
 class User(Resource):
@@ -20,6 +20,15 @@ class User(Resource):
         user = UserModel.find_user(user_id)
         if user:
             return user.json()
+        return {'message': 'User not found.'}, 404
+
+    def put(self,email):
+        data = body_request.parse_args()
+        user = UserModel.find_by_email(email)
+        if user:
+            user.restaurant_id = data.get('restaurant_id')
+            user.save_user()
+            return user.json(), 200
         return {'message': 'User not found.'}, 404
 
     @jwt_required()
@@ -44,7 +53,7 @@ class UserRegister(Resource):
             return {"message": "The username '{}' already exists.".format(data['username'])}, 400 #Bad Request
 
         user = UserModel(**data)
-        user.activated = False ###################### Change Here
+        user.activated = True ###################### Change Here - False after
         try:
             user.save_user()
             user.send_confirmation_email()
@@ -65,7 +74,10 @@ class UserLogin(Resource):
         if user and safe_str_cmp(user.password, data['password']):
             if user.activated:
                 access_token = create_access_token(identity=user.user_id)
-                return {'username': user.username, 'access_token': access_token}, 200
+                return {'username': user.username, 
+                        "restaurant_id": user.restaurant_id, 
+                        "email": user.email,
+                        'access_token': access_token}, 200
             return {'message': 'User not confirmed.'}, 400
         return {'message': 'The email or password is incorrect.'}, 401 # Unauthorized
 
