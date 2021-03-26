@@ -1,7 +1,7 @@
 from flask import Flask, jsonify
 from flask_restful import Api
 from flask_jwt_extended import JWTManager
-from resources.restaurant import UsersByRestaurantId, Restaurant
+from resources.restaurant import UsersByRestaurantId, Restaurant, RestaurantById
 from resources.user import User, UserRegister, UserLogin, UserLogout, UserConfirm
 from blacklist import BLACKLIST
 from flask_cors import CORS
@@ -39,6 +39,7 @@ api.add_resource(UserLogout, '/logout')
 api.add_resource(UserConfirm, '/confirm/<int:user_id>')
 api.add_resource(UsersByRestaurantId, '/restaurants/<string:restaurant_id>/users')
 api.add_resource(Restaurant, '/restaurant/')
+api.add_resource(RestaurantById, '/restaurant/<string:restaurant_id>')
 
 if __name__ == '__main__':
     from sql_alchemy import db

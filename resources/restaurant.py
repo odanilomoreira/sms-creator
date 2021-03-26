@@ -17,6 +17,20 @@ class Restaurants(Resource):
     def get(self):
         return {'restaurants': [restaurant.json() for restaurant in RestaurantModel.query.all()]}
 
+class RestaurantById(Resource):
+    def get(self, restaurant_id):
+        restaurant = RestaurantModel.find_by_id(restaurant_id)
+        if restaurant:
+            return restaurant.json()
+        return {'message': 'Restaurant not found.'}, 404 # not found
+
+    def delete(self, restaurant_id):
+        restaurant = RestaurantModel.find_by_id(restaurant_id)
+        if restaurant:
+            restaurant.delete_restaurant()
+            return {'message':'Restaurant deleted.'}
+        return {'message': 'Restaurant not found.'}, 404
+
 class Restaurant(Resource):
     def get(self, restaurant_id):
         restaurant = RestaurantModel.find_restaurant(restaurant_id)
@@ -35,10 +49,3 @@ class Restaurant(Resource):
         except:
             return {'message': 'An internal error ocurred trying to create a new restaurant.'}, 500
         return restaurant.json()
-
-    def delete(self, restaurant_id):
-        restaurant = RestaurantModel.find_restaurant(restaurant_id)
-        if restaurant:
-            restaurant.delete_restaurant()
-            return {'message':'Restaurant deleted.'}
-        return {'message': 'Restaurant not found.'}, 404
