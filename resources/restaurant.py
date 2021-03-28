@@ -4,11 +4,11 @@ from models.user import UserModel
 
 
 body_request = reqparse.RequestParser()
-body_request.add_argument('restaurant_name', type=str, required=True, help="The field 'restaurant_name' cannot be left blank.")
-body_request.add_argument('restaurant_phone', type=str, required=True, help="The field 'restaurant_phone' cannot be left blank.")
-body_request.add_argument('restaurant_id', type=str, required=True, help="The field 'restaurant_id' cannot be left blank.")
-body_request.add_argument('pickup_message', type=str, required=True, help="The field 'pickup_message' cannot be left blank.")
-body_request.add_argument('delivery_message', type=str, required=True, help="The field 'delivery_message' cannot be left blank.")
+body_request.add_argument('restaurant_name', type=str)
+body_request.add_argument('restaurant_phone', type=str)
+body_request.add_argument('restaurant_id', type=str)
+body_request.add_argument('pickup_message', type=str)
+body_request.add_argument('delivery_message', type=str)
 
 
 class UsersByRestaurantId(Resource):
@@ -25,6 +25,22 @@ class RestaurantById(Resource):
         if restaurant:
             return restaurant.json()
         return {'message': 'Restaurant not found.'}, 404 # not found
+
+    def put(self,restaurant_id):
+        data = body_request.parse_args()
+        restaurant = RestaurantModel.find_by_id(restaurant_id)
+        if restaurant:
+            if data.get('pickup_message'):
+                restaurant.pickup_message = data.get('pickup_message')
+                restaurant.save_restaurant()
+                return {'message': 'Restaurant pickup message updated successfully'}, 200
+
+            if data.get('delivery_message'):
+                restaurant.delivery_message = data.get('delivery_message')
+                restaurant.save_restaurant()
+                return {'message': 'Restaurant delivery message updated successfully'}, 200
+            
+        return {'message': 'Restaurant message could not be updated'}, 404
 
     def delete(self, restaurant_id):
         restaurant = RestaurantModel.find_by_id(restaurant_id)
